@@ -2,75 +2,76 @@
 using static LINQPractic.Program;
 
 namespace LINQPractic
-{
+{/*
+    В книге содержится 6 записей.
+
+Реализуйте для неё постраничный вывод, по 2 записи на страницу.Работать это должно следующим образом: 
+
+Пользователь вводит номер страницы от 1 до 3 с консоли(получить можно через Console.ReadKey().KeyChar;).
+Программа выводит записи с этой страницы(к примеру, если введёт 2, то должно показать Анатолия и Валерия).
+После работы программа не завершается, а снова ожидает ввод.*/
 
 
 
-    // Задание 14.1.1
-    //А теперь попробуйте выбрать все города, название у которых не длиннее 10 букв, и отсортируйте их по длине названия.
     internal class Program
     {
         static void Main(string[] args)
         {
-            // Словарь для хранения стран с городами
-            var Countries = new Dictionary<string, List<City>>();
+            //  создаём пустой список с типом данных Contact
+            var phoneBook = new List<Contact>();
 
-            // Добавим Россию с её городами
-            var russianCities = new List<City>();
-            russianCities.Add(new City("Москва", 11900000));
-            russianCities.Add(new City("Санкт-Петербург", 4991000));
-            russianCities.Add(new City("Волгоград", 1099000));
-            russianCities.Add(new City("Казань", 1169000));
-            russianCities.Add(new City("Севастополь", 449138));
-            Countries.Add("Россия", russianCities);
+            // добавляем контакты
+            phoneBook.Add(new Contact("Игорь", "Николаев", 79990000001, "igor@example.com"));
+            phoneBook.Add(new Contact("Сергей", "Довлатов", 79990000010, "serge@example.com"));
+            phoneBook.Add(new Contact("Анатолий", "Карпов", 79990000011, "anatoly@example.com"));
+            phoneBook.Add(new Contact("Валерий", "Леонтьев", 79990000012, "valera@example.com"));
+            phoneBook.Add(new Contact("Сергей", "Брин", 799900000013, "serg@example.com"));
+            phoneBook.Add(new Contact("Иннокентий", "Смоктуновский", 799900000013, "innokentii@example.com"));
 
-            // Добавим Беларусь
-            var belarusCities = new List<City>();
-            belarusCities.Add(new City("Минск", 1200000));
-            belarusCities.Add(new City("Витебск", 362466));
-            belarusCities.Add(new City("Гродно", 368710));
-            Countries.Add("Беларусь", belarusCities);
-
-            // Добавим США
-            var americanCities = new List<City>();
-            americanCities.Add(new City("Нью-Йорк", 8399000));
-            americanCities.Add(new City("Вашингтон", 705749));
-            americanCities.Add(new City("Альбукерке", 560218));
-            Countries.Add("США", americanCities);
-
-
-
-            // Задача: сделать выборку городов-миллионников по всем странам.
-
-            var cities = from country in Countries // пройдемся по странам
-                         from city in country.Value // пройдемся по городам
-                         where city.Population > 1000000 // выберем города - миллионники
-                         orderby city.Population descending // отсортируем по населению
-                         select city;
-
-            foreach (var city in cities)
-                Console.WriteLine(city.Name + " - " + city.Population);
-
-        }
-
-        
-        // Создадим модель класс для города
-        public class City
-        {
-            public City(string name, long population)
+            while (true)
             {
-                Name = name;
-                Population = population;
+                // Читаем введенный с консоли символ
+                var input = Console.ReadKey().KeyChar;
+
+                // проверяем, число ли это
+                var parsed = Int32.TryParse(input.ToString(), out int pageNumber);
+
+                // если не соответствует критериям - показываем ошибку
+                if (!parsed || pageNumber < 1 || pageNumber > 3)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Страницы не существует");
+                }
+                // если соответствует - запускаем вывод
+                else
+                {
+                    // пропускаем нужное количество элементов и берем 2 для показа на странице
+                    var pageContent = phoneBook.Skip((pageNumber - 1) * 2).Take(2);
+                    Console.WriteLine();
+
+                    // выводим результат
+                    foreach (var entry in pageContent)
+                        Console.WriteLine(entry.Name + " " + entry.LastName + ": " + entry.PhoneNumber);
+
+                    Console.WriteLine();
+                }
             }
-
-            public string Name { get; set; }
-            public long Population { get; set; }
-
-            
+        }
+    }
+    public class Contact // модель класса
+    {
+        public Contact(string name, string lastName, long phoneNumber, String email) // метод-конструктор
+        {
+            Name = name;
+            LastName = lastName;
+            PhoneNumber = phoneNumber;
+            Email = email;
         }
 
-
-
+        public String Name { get; }
+        public String LastName { get; }
+        public long PhoneNumber { get; }
+        public String Email { get; }
     }
 }
 
